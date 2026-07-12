@@ -31,7 +31,7 @@ void send_notification(const char* message)
 
 #ifdef BUILD_INSTALLER
 #include "payload_elf.h"
-#define PAYLOAD_DST "/data/payloads/db-rebuilder-" PAYLOAD_VERSION ".elf"
+#define PAYLOAD_DST "/data/payloads/db-rebuilder-v" PAYLOAD_VERSION ".elf"
 
 static int install_payload(void)
 {
