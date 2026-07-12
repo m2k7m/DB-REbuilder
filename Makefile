@@ -1,5 +1,4 @@
-PS4_HOST ?= ps4
-PS4_PORT ?= 9021
+VERSION := 0.1
 
 ifdef PS4_PAYLOAD_SDK
     include $(PS4_PAYLOAD_SDK)/toolchain/orbis.mk
@@ -10,8 +9,8 @@ endif
 BUILDDIR := build
 SRCDIR   := src
 
-ELF_NORMAL    := db-rebuilder.elf
-ELF_INSTALLER := db-rebuilder-installer.elf
+ELF_NORMAL    := db-rebuilder-$(VERSION).elf
+ELF_INSTALLER := db-rebuilder-$(VERSION)-installer.elf
 
 ELF_STRIP := $(firstword $(wildcard $(PS4_PAYLOAD_SDK)/bin/orbis-llvm-strip) \
 	$(wildcard $(PS4_PAYLOAD_SDK)/bin/orbis-strip))
@@ -34,6 +33,7 @@ PAYLOAD_BIN := $(BUILDDIR)/payload_normal_elf
 PAYLOAD_OBJ := $(BUILDDIR)/payload_elf.o
 
 COMMON_CFLAGS := -O2 -std=c11 -DPLATFORM_PS4=1 -I$(SRCDIR) \
+                 -DPAYLOAD_VERSION=\"$(VERSION)\" \
                  -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION
 
 CFLAGS := -Wall -Wextra -Werror $(COMMON_CFLAGS)
@@ -77,6 +77,3 @@ $(ELF_INSTALLER): $(INSTALLER_OBJS) $(SQLITE_OBJ) $(PAYLOAD_OBJ)
 
 clean:
 	rm -rf $(BUILDDIR) $(ELF_NORMAL) $(ELF_INSTALLER)
-
-test: $(ELF_NORMAL)
-	$(PS4_DEPLOY) -h $(PS4_HOST) -p $(PS4_PORT) $<

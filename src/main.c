@@ -7,9 +7,31 @@
 #include "util.h"
 #include "sqlite_db.h"
 
+/* ── Notifications ── */
+typedef struct notify_request {
+    char useless1[45];
+    char message[3075];
+} notify_request_t;
+
+int sceKernelSendNotificationRequest(int, notify_request_t*, size_t, int);
+
+void send_notification(const char* message)
+{
+    notify_request_t req;
+    memset(&req, 0, sizeof(req));
+    strncpy(req.message, message, sizeof(req.message) - 1);
+    sceKernelSendNotificationRequest(0, &req, sizeof(req), 0);
+}
+
+/* ── Constants ── */
+#define APP_NAME        "DB-Rebuilder"
+#define APP_COPYRIGHT   "(c) 4GAMER"
+#define DATA_DIR        "/data/DB-Rebuilder"
+#define LOG_PATH        DATA_DIR "/log.txt"
+
 #ifdef BUILD_INSTALLER
 #include "payload_elf.h"
-#define PAYLOAD_DST "/data/payloads/db-rebuilder.elf"
+#define PAYLOAD_DST "/data/payloads/db-rebuilder-" PAYLOAD_VERSION ".elf"
 
 static int install_payload(void)
 {
@@ -46,9 +68,6 @@ static int install_payload(void)
     return 0;
 }
 #endif
-
-#define LOG_DIR  "/data/db-rebuilder"
-#define LOG_PATH LOG_DIR "/log.txt"
 
 int main(void)
 {
@@ -108,5 +127,12 @@ int main(void)
 
     LOG("Done.");
     log_fini();
+
+    char done_msg[256];
+    snprintf(done_msg, sizeof(done_msg), "%s v%s %s\n%s",
+             APP_NAME, PAYLOAD_VERSION, APP_COPYRIGHT,
+             (ret == 0) ? "Database rebuild completed successfully." : "Database rebuild completed with errors.");
+    send_notification(done_msg);
+
     return ret;
 }
