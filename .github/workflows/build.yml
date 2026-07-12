@@ -1,0 +1,46 @@
+name: Build PS4 Payload
+
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.txt"
+  pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.txt"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout SDK
+        uses: actions/checkout@v4
+        with:
+          repository: ps4-payload-dev/sdk
+          path: sdk
+
+      - name: Setup SDK
+        working-directory: sdk
+        run: |
+          sudo apt update
+          sudo apt install -y clang-18 lld-18
+          make DESTDIR=${{ runner.tool_cache }}/ps4-payload-sdk clean install
+          echo PS4_PAYLOAD_SDK=${{ runner.tool_cache }}/ps4-payload-sdk >> $GITHUB_ENV
+
+      - name: Checkout Payload
+        uses: actions/checkout@v4
+
+      - name: Build Payload
+        run: |
+          make clean all
+
+      - name: Upload Payloads
+        uses: actions/upload-artifact@v4
+        with:
+          name: Payloads
+          path: |
+            db-rebuilder.elf
+            db-rebuilder-installer.elf
+          if-no-files-found: error
