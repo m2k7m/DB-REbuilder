@@ -67,9 +67,12 @@ static int memSleep(sqlite3_vfs*, int microseconds);
 static int memCurrentTime(sqlite3_vfs*, double*);
 static int memGetLastError(sqlite3_vfs*, int, char *);
 static int memCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+static int memSetSystemCall(sqlite3_vfs*, const char *zName, sqlite3_syscall_ptr);
+static sqlite3_syscall_ptr memGetSystemCall(sqlite3_vfs*, const char *zName);
+static const char *memNextSystemCall(sqlite3_vfs*, const char *zName);
 
 static sqlite3_vfs mem_vfs = {
-  2,
+  3,
   0,
   1024,
   0,
@@ -87,7 +90,10 @@ static sqlite3_vfs mem_vfs = {
   memSleep,
   memCurrentTime,
   memGetLastError,
-  memCurrentTimeInt64
+  memCurrentTimeInt64,
+  memSetSystemCall,
+  memGetSystemCall,
+  memNextSystemCall
 };
 
 static const sqlite3_io_methods mem_io_methods = {
@@ -323,6 +329,27 @@ static int memCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
   memCurrentTime(pVfs, &ct);
   *p = (sqlite3_int64)(ct * 86400000);
   return SQLITE_OK;
+}
+
+static int memSetSystemCall(sqlite3_vfs *pVfs, const char *zName, sqlite3_syscall_ptr p){
+  if( ORIGVFS(pVfs)->xSetSystemCall ){
+    return ORIGVFS(pVfs)->xSetSystemCall(ORIGVFS(pVfs), zName, p);
+  }
+  return SQLITE_ERROR;
+}
+
+static sqlite3_syscall_ptr memGetSystemCall(sqlite3_vfs *pVfs, const char *zName){
+  if( ORIGVFS(pVfs)->xGetSystemCall ){
+    return ORIGVFS(pVfs)->xGetSystemCall(ORIGVFS(pVfs), zName);
+  }
+  return 0;
+}
+
+static const char *memNextSystemCall(sqlite3_vfs *pVfs, const char *zName){
+  if( ORIGVFS(pVfs)->xNextSystemCall ){
+    return ORIGVFS(pVfs)->xNextSystemCall(ORIGVFS(pVfs), zName);
+  }
+  return 0;
 }
 
 int sqlite3_memvfs_init(
