@@ -85,14 +85,13 @@ int main(void)
         return 1;
     }
 
-    LOG("============================================================");
+    LOG("===================================");
 #ifdef BUILD_INSTALLER
     LOG("DB Rebuilder (Installer)");
 #else
     LOG("DB Rebuilder");
 #endif
-    LOG("Build: %s %s", __DATE__, __TIME__);
-    LOG("============================================================");
+    LOG("===================================");
 
     LOG("Rebuilding app.db (%s)...", APP_DB_PATH);
     if (!appdb_rebuild(APP_DB_PATH))
@@ -117,7 +116,6 @@ int main(void)
     }
 
 #ifdef BUILD_INSTALLER
-    LOG("Installing payload...");
     if (install_payload() != 0)
     {
         LOG("Payload installation failed");
@@ -131,7 +129,7 @@ int main(void)
     char done_msg[256];
     snprintf(done_msg, sizeof(done_msg), "%s v%s %s\n%s",
              APP_NAME, PAYLOAD_VERSION, APP_COPYRIGHT,
-             (ret == 0) ? "Database rebuild completed successfully." : "Database rebuild completed with errors.");
+             (ret == 0) ? "Database rebuilt successfully." : "Database rebuilt with errors.");
     send_notification(done_msg);
 
     return ret;

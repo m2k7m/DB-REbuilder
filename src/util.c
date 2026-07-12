@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <time.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -38,17 +37,10 @@ void LOG(const char* fmt, ...)
 {
     char buf[1024];
     va_list ap;
-    time_t now;
-    struct tm* tm_info;
-    char time_buf[32];
     int n;
 
     if (!fmt)
         return;
-
-    time(&now);
-    tm_info = localtime(&now);
-    strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M:%S", tm_info);
 
     va_start(ap, fmt);
     n = vsnprintf(buf, sizeof(buf), fmt, ap);
@@ -58,9 +50,9 @@ void LOG(const char* fmt, ...)
         return;
 
     if (g_log_file)
-        fprintf(g_log_file, "[%s] %s\n", time_buf, buf);
+        fprintf(g_log_file, "%s\n", buf);
 
-    printf("[%s] %s\n", time_buf, buf);
+    printf("%s\n", buf);
     fflush(stdout);
 }
 
