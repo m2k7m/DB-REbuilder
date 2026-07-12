@@ -40,7 +40,7 @@ CFLAGS := -Wall -Wextra -Werror $(COMMON_CFLAGS)
 
 SQLITE_CFLAGS := -w $(COMMON_CFLAGS)
 
-LDLIBS := -lc -lkernel -lm
+LDLIBS := -lc -lkernel
 
 .PHONY: all clean test
 
