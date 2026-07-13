@@ -65,6 +65,9 @@ static int install_payload(void)
     fclose(fp);
     chmod(PAYLOAD_DST, 0777);
     LOG("Payload installed successfully");
+    char done_msg[256];
+    snprintf(done_msg, sizeof(done_msg), "%s v%s Payload installed to /data/payloads/.", APP_NAME, PAYLOAD_VERSION);
+    send_notification(done_msg);
     return 0;
 }
 #endif
