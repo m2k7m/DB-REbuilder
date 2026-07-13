@@ -27,7 +27,7 @@ void send_notification(const char* message)
 #define APP_NAME        "DB-Rebuilder"
 #define APP_COPYRIGHT   "(c) 4GAMER"
 #define DATA_DIR        "/data/DB-Rebuilder"
-#define LOG_PATH        DATA_DIR "/log.txt"
+#define LOG_PATH        DATA_DIR "/DB-Rebuilder.log"
 
 #ifdef BUILD_INSTALLER
 #include "payload_elf.h"

@@ -1,3 +1,5 @@
+// thanks bucanero: https://github.com/bucanero/apollo-ps4/blob/main/source/sqlite_db.c
+
 #include "sqlite_db.h"
 #include "util.h"
 #include "sfo.h"

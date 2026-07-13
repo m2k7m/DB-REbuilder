@@ -1,5 +1,7 @@
+// thanks bucanero: https://github.com/bucanero/apollo-ps4/blob/main/source/sfo.c
+
 #include "sfo.h"
-#include "util.h"
+#include "util.h"s
 
 #include <stdio.h>
 #include <stdlib.h>

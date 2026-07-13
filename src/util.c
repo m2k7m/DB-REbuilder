@@ -1,3 +1,5 @@
+// thanks bucanero: https://github.com/bucanero/apollo-ps4/blob/main/source/util.c
+
 #include "util.h"
 
 #include <stdio.h>
@@ -15,7 +17,7 @@ int log_init(const char* path)
     if (mkdirs(path) != SUCCESS)
         return -1;
 
-    g_log_file = fopen(path, "a");
+    g_log_file = fopen(path, "w");
     if (!g_log_file)
         return -1;
 
