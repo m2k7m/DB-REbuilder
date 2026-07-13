@@ -2,13 +2,17 @@ name: Build PS4 Payload
 
 on:
   push:
+    tags-ignore:
+      - '**'
     paths-ignore:
       - "**/*.md"
       - "**/*.txt"
+      - "**/*.yml"
   pull_request:
     paths-ignore:
       - "**/*.md"
       - "**/*.txt"
+      - "**/*.yml"
   workflow_dispatch:
 
 env:
