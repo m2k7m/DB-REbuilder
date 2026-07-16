@@ -4,15 +4,15 @@ on:
   push:
     tags-ignore:
       - '**'
-    paths-ignore:
-      - "**/*.md"
-      - "**/*.txt"
-      - "**/*.yml"
+    paths:
+      - "**/*.c"
+      - "**/*.h"
+      - "Makefile"
   pull_request:
-    paths-ignore:
-      - "**/*.md"
-      - "**/*.txt"
-      - "**/*.yml"
+    paths:
+      - "**/*.c"
+      - "**/*.h"
+      - "Makefile"
   workflow_dispatch:
 
 env:
