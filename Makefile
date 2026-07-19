@@ -33,14 +33,28 @@ PAYLOAD_BIN := $(BUILDDIR)/payload_normal_elf
 PAYLOAD_OBJ := $(BUILDDIR)/payload_elf.o
 
 COMMON_CFLAGS := -O2 -std=c11 -DPLATFORM_PS4=1 -I$(SRCDIR) \
+                 -ffunction-sections -fdata-sections \
+                 -fno-asynchronous-unwind-tables \
                  -DPAYLOAD_VERSION=\"$(VERSION)\" \
-                 -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION
+                 -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION \
+                 -DSQLITE_OMIT_DEPRECATED \
+                 -DSQLITE_OMIT_PROGRESS_CALLBACK \
+                 -DSQLITE_OMIT_SHARED_CACHE \
+                 -DSQLITE_OMIT_TCL_VARIABLE \
+                 -DSQLITE_OMIT_AUTHORIZATION \
+                 -DSQLITE_OMIT_COMPLETE \
+                 -DSQLITE_OMIT_GET_TABLE \
+                 -DSQLITE_OMIT_INCRBLOB \
+                 -DSQLITE_OMIT_VACUUM \
+                 -DSQLITE_OMIT_VIRTUALTABLE
 
 CFLAGS := -Wall -Wextra -Werror $(COMMON_CFLAGS)
 
-SQLITE_CFLAGS := -w $(COMMON_CFLAGS)
+SQLITE_CFLAGS := -w $(COMMON_CFLAGS) -Os
 
 LDLIBS := -lc -lkernel
+
+LDFLAGS := -Wl,--gc-sections
 
 .PHONY: all clean test
 
@@ -59,8 +73,9 @@ $(SQLITE_OBJ): $(SQLITE_SRC) | $(BUILDDIR)
 	$(CC) $(SQLITE_CFLAGS) -c -o $@ $<
 
 $(ELF_NORMAL): $(OBJS) $(SQLITE_OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 	$(ELF_STRIP) --strip-all $@
+	$(ELF_STRIP) --remove-section=.eh_frame --remove-section=.eh_frame_hdr $@
 
 $(INSTALLER_MAIN_OBJ): $(SRCDIR)/main.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) -DBUILD_INSTALLER -c -o $@ $<
@@ -72,8 +87,9 @@ $(PAYLOAD_OBJ): $(PAYLOAD_BIN) | $(BUILDDIR)
 	cd $(BUILDDIR) && $(LD) -r -b binary -m elf_x86_64 -o $(notdir $@) $(notdir $(PAYLOAD_BIN))
 
 $(ELF_INSTALLER): $(INSTALLER_OBJS) $(SQLITE_OBJ) $(PAYLOAD_OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 	$(ELF_STRIP) --strip-all $@
+	$(ELF_STRIP) --remove-section=.eh_frame --remove-section=.eh_frame_hdr $@
 
 clean:
 	rm -rf $(BUILDDIR) $(ELF_NORMAL) $(ELF_INSTALLER)
