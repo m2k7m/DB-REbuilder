@@ -76,7 +76,10 @@ typedef struct {
 
 static void *
 memcpy(void *dest, const void *src, unsigned long n) {
-  asm __volatile__("rep movsb" : "+D"(dest), "+S"(src), "+c"(n) : : "memory");
+  __asm__ __volatile__("rep movsb"
+                       : "+D"(dest), "+S"(src), "+c"(n)
+                       :
+                       : "memory");
   return dest;
 }
 
@@ -178,7 +181,7 @@ payload_exec(unsigned char *elf) {
     }
 
     Elf64_Rela *rela = (Elf64_Rela *)(elf + shdr[i].sh_offset);
-    for (int j = 0; j < shdr[i].sh_size / sizeof(Elf64_Rela); j++) {
+    for (unsigned long j = 0; j < shdr[i].sh_size / sizeof(Elf64_Rela); j++) {
       if ((rela[j].r_info & 0xffffffffl) == R_X86_64_RELATIVE) {
         void *loc = (img + rela[j].r_offset);
         void *val = (img + rela[j].r_addend);

@@ -87,7 +87,8 @@ $(ELF_NORMAL): $(OBJS) $(SQLITE_OBJ)
 	$(ELF_STRIP) --remove-section=.eh_frame --remove-section=.eh_frame_hdr $@
 
 $(PAYLOAD_ELF_C): $(ELF_NORMAL) | $(BUILDDIR)
-	xxd -i $< > $@
+	cp $< $(BUILDDIR)/db_rebuilder.elf
+	xxd -i $(BUILDDIR)/db_rebuilder.elf > $@
 
 $(BOOTSTRAP_OBJ): $(SRCDIR)/bootstrap-bin.c $(PAYLOAD_ELF_C) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -I$(BUILDDIR) -c -o $@ $<
