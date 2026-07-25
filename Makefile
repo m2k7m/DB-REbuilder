@@ -11,6 +11,7 @@ SRCDIR   := src
 
 ELF_NORMAL    := db-rebuilder-v$(VERSION).elf
 ELF_INSTALLER := db-rebuilder-v$(VERSION)-installer.elf
+BIN_NORMAL    := db-rebuilder-v$(VERSION).bin
 
 ELF_STRIP := $(firstword $(wildcard $(PS4_PAYLOAD_SDK)/bin/orbis-llvm-strip) \
 	$(wildcard $(PS4_PAYLOAD_SDK)/bin/orbis-strip))
@@ -32,6 +33,9 @@ INSTALLER_OBJS := $(OBJS:$(BUILDDIR)/main.o=$(INSTALLER_MAIN_OBJ))
 PAYLOAD_BIN := $(BUILDDIR)/payload_normal_elf
 PAYLOAD_OBJ := $(BUILDDIR)/payload_elf.o
 
+PAYLOAD_ELF_C := $(BUILDDIR)/db_rebuilder_elf.c
+BOOTSTRAP_OBJ := $(BUILDDIR)/bootstrap-bin.o
+
 COMMON_CFLAGS := -O2 -std=c11 -DPLATFORM_PS4=1 -I$(SRCDIR) \
                  -ffunction-sections -fdata-sections \
                  -fno-asynchronous-unwind-tables \
@@ -44,11 +48,19 @@ COMMON_CFLAGS := -O2 -std=c11 -DPLATFORM_PS4=1 -I$(SRCDIR) \
                  -DSQLITE_OMIT_AUTHORIZATION \
                  -DSQLITE_OMIT_COMPLETE \
                  -DSQLITE_OMIT_GET_TABLE \
-                 -DSQLITE_OMIT_INCRBLOB
+                 -DSQLITE_OMIT_INCRBLOB \
+                 -DSQLITE_OMIT_ANALYZE \
+                 -DSQLITE_OMIT_AUTOVACUUM \
+                 -DSQLITE_OMIT_EXPLAIN \
+                 -DSQLITE_OMIT_FOREIGN_KEY \
+                 -DSQLITE_OMIT_LOOKASIDE \
+                 -DSQLITE_OMIT_UTF16 \
+                 -DSQLITE_OMIT_WAL \
+                 -DSQLITE_OMIT_XFER_OPT
 
 CFLAGS := -Wall -Wextra -Werror $(COMMON_CFLAGS)
 
-SQLITE_CFLAGS := -w $(COMMON_CFLAGS) -Os
+SQLITE_CFLAGS := -w $(COMMON_CFLAGS) -Oz
 
 LDLIBS := -lc -lkernel
 
@@ -56,7 +68,7 @@ LDFLAGS := -Wl,--gc-sections
 
 .PHONY: all clean test
 
-all: $(ELF_NORMAL) $(ELF_INSTALLER)
+all: $(ELF_NORMAL) $(ELF_INSTALLER) $(BIN_NORMAL)
 
 $(BUILDDIR):
 	mkdir -p $(BUILDDIR)
@@ -75,6 +87,16 @@ $(ELF_NORMAL): $(OBJS) $(SQLITE_OBJ)
 	$(ELF_STRIP) --strip-all $@
 	$(ELF_STRIP) --remove-section=.eh_frame --remove-section=.eh_frame_hdr $@
 
+$(PAYLOAD_ELF_C): $(ELF_NORMAL) | $(BUILDDIR)
+	xxd -i $< > $@
+
+$(BOOTSTRAP_OBJ): $(SRCDIR)/bootstrap-bin.c $(PAYLOAD_ELF_C) | $(BUILDDIR)
+	$(CC) $(CFLAGS) -I$(BUILDDIR) -c -o $@ $<
+
+$(BIN_NORMAL): $(BOOTSTRAP_OBJ) $(SRCDIR)/bin_x86_64.x | $(BUILDDIR)
+	$(LD) -T $(SRCDIR)/bin_x86_64.x -o $(BUILDDIR)/bootstrap-bin.elf $(BOOTSTRAP_OBJ)
+	$(OBJCOPY) -O binary --only-section=.text $(BUILDDIR)/bootstrap-bin.elf $@
+
 $(INSTALLER_MAIN_OBJ): $(SRCDIR)/main.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) -DBUILD_INSTALLER -c -o $@ $<
 
@@ -90,4 +112,4 @@ $(ELF_INSTALLER): $(INSTALLER_OBJS) $(SQLITE_OBJ) $(PAYLOAD_OBJ)
 	$(ELF_STRIP) --remove-section=.eh_frame --remove-section=.eh_frame_hdr $@
 
 clean:
-	rm -rf $(BUILDDIR) $(ELF_NORMAL) $(ELF_INSTALLER)
+	rm -rf $(BUILDDIR) $(ELF_NORMAL) $(ELF_INSTALLER) $(BIN_NORMAL)

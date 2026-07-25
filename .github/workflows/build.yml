@@ -13,7 +13,6 @@ on:
       - "**/*.c"
       - "**/*.h"
       - "Makefile"
-  workflow_dispatch:
 
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
@@ -47,5 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Payloads
-          path: db-rebuilder*.elf
+          path: |
+            db-rebuilder*.elf
+            db-rebuilder*.bin
           if-no-files-found: error
