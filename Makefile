@@ -49,7 +49,6 @@ COMMON_CFLAGS := -O2 -std=c11 -DPLATFORM_PS4=1 -I$(SRCDIR) \
                  -DSQLITE_OMIT_COMPLETE \
                  -DSQLITE_OMIT_GET_TABLE \
                  -DSQLITE_OMIT_INCRBLOB \
-                 -DSQLITE_OMIT_ANALYZE \
                  -DSQLITE_OMIT_AUTOVACUUM \
                  -DSQLITE_OMIT_EXPLAIN \
                  -DSQLITE_OMIT_FOREIGN_KEY \
