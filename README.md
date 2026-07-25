@@ -26,4 +26,5 @@ Simply [run the payload](https://github.com/m2k7m/DB-REbuilder#how-to-run), then
 ## Credits
 
 * A huge thanks to [bucanero](https://github.com/bucanero/) for his awesome [apollo-ps4](https://github.com/bucanero/apollo-ps4/tree/main) project.
+* A huge thanks to [John Törnblom](https://github.com/john-tornblom) and [ps4-payload-dev](https://github.com/ps4-payload-dev/) for [sdk](https://github.com/ps4-payload-dev/sdk) and [elfldr](https://github.com/ps4-payload-dev/elfldr).
 * Developed by me and the 4GAMER team.
