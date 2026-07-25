@@ -6,9 +6,6 @@ DB-REbuilder is a payload designed for jailbroken PS4 consoles. It resolves the 
 
 To download the latest version, please visit the [Releases Page](https://github.com/m2k7m/DB-REbuilder/releases/latest).
 
-## Requirements
-* [GoldHEN v2.4b18.8](https://ko-fi.com/s/d64a916507) or higher.
-
 ## How to Run
 
 ### Method 1: Network Injection
