@@ -88,7 +88,7 @@ $(ELF_NORMAL): $(OBJS) $(SQLITE_OBJ)
 
 $(PAYLOAD_ELF_C): $(ELF_NORMAL) | $(BUILDDIR)
 	cp $< $(BUILDDIR)/db_rebuilder.elf
-	xxd -i $(BUILDDIR)/db_rebuilder.elf > $@
+	cd $(BUILDDIR) && xxd -i db_rebuilder.elf > $(notdir $(PAYLOAD_ELF_C))
 
 $(BOOTSTRAP_OBJ): $(SRCDIR)/bootstrap-bin.c $(PAYLOAD_ELF_C) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -I$(BUILDDIR) -c -o $@ $<
