@@ -29,49 +29,6 @@ void send_notification(const char* message)
 #define DATA_DIR        "/data/DB-Rebuilder"
 #define LOG_PATH        DATA_DIR "/DB-Rebuilder.log"
 
-#ifdef BUILD_INSTALLER
-#include "payload_elf.h"
-#define PAYLOAD_DST "/data/payloads/db-rebuilder-v" PAYLOAD_VERSION ".elf"
-
-static int install_payload(void)
-{
-    const unsigned char* start = _binary_payload_normal_elf_start;
-    const unsigned char* end = _binary_payload_normal_elf_end;
-    size_t size = end - start;
-    FILE* fp;
-
-    LOG("Installing payload to %s (%zu bytes)", PAYLOAD_DST, size);
-
-    if (mkdirs(PAYLOAD_DST) != SUCCESS)
-    {
-        LOG("Failed to create /data/payloads/");
-        return -1;
-    }
-
-    fp = fopen(PAYLOAD_DST, "wb");
-    if (!fp)
-    {
-        LOG("Failed to open %s for writing", PAYLOAD_DST);
-        return -1;
-    }
-
-    if (fwrite(start, 1, size, fp) != size)
-    {
-        LOG("Failed to write payload");
-        fclose(fp);
-        return -1;
-    }
-
-    fclose(fp);
-    chmod(PAYLOAD_DST, 0777);
-    LOG("Payload installed successfully");
-    char done_msg[256];
-    snprintf(done_msg, sizeof(done_msg), "%s v%s Payload installed to /data/payloads/.", APP_NAME, PAYLOAD_VERSION);
-    send_notification(done_msg);
-    return 0;
-}
-#endif
-
 int main(void)
 {
     int ret = 0;
@@ -89,11 +46,7 @@ int main(void)
     }
 
     LOG("===================================");
-#ifdef BUILD_INSTALLER
-    LOG("DB Rebuilder (Installer)");
-#else
     LOG("DB Rebuilder");
-#endif
     LOG("===================================");
 
     LOG("Rebuilding app.db (%s)...", APP_DB_PATH);
@@ -117,14 +70,6 @@ int main(void)
     {
         LOG("addcont.db rebuild completed");
     }
-
-#ifdef BUILD_INSTALLER
-    if (install_payload() != 0)
-    {
-        LOG("Payload installation failed");
-        ret = 1;
-    }
-#endif
 
     LOG("Done.");
     log_fini();
