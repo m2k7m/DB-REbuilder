@@ -196,8 +196,97 @@ payload_exec(unsigned char *elf) {
   munmap(img, img_size);
 }
 
+#ifdef BUILD_INSTALLER
+
+#define O_WRONLY 1
+#define O_CREAT  0x0200
+#define O_TRUNC  0x0400
+
+static inline int
+sys_open(const char *path, int flags, int mode) {
+  return (int)__syscall(5, path, flags, mode);
+}
+
+static inline int
+sys_close(int fd) {
+  return (int)__syscall(6, fd);
+}
+
+static inline long
+sys_write(int fd, const void *buf, unsigned long n) {
+  return __syscall(4, fd, buf, n);
+}
+
+static inline int
+sys_mkdir(const char *path, unsigned int mode) {
+  return (int)__syscall(136, path, mode);
+}
+
+static inline int
+sys_chmod(const char *path, unsigned int mode) {
+  return (int)__syscall(15, path, mode);
+}
+
+typedef struct {
+  char useless1[45];
+  char message[3075];
+} notify_request_t;
+
+int sceKernelSendNotificationRequest(int, notify_request_t *, unsigned long, int);
+
+static void
+send_notification(const char *message) {
+  notify_request_t req;
+  unsigned char *p = (unsigned char *)&req;
+  unsigned long i;
+  unsigned long len;
+
+  for (i = 0; i < sizeof(req); i++) {
+    p[i] = 0;
+  }
+
+  for (len = 0; len < sizeof(req.message) - 1 && message[len]; len++) {
+    req.message[len] = message[len];
+  }
+  req.message[len] = '\0';
+
+  sceKernelSendNotificationRequest(0, &req, sizeof(req), 0);
+}
+
+int
+main(void) {
+  const char *dst = "/data/payloads/db-rebuilder-v" PAYLOAD_VERSION ".elf";
+  int fd;
+
+  sys_mkdir("/data/payloads", 0777);
+
+  fd = sys_open(dst, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+  if (fd < 0) {
+    return 1;
+  }
+
+  if (sys_write(fd, db_rebuilder_elf, db_rebuilder_elf_len)
+      != (long)db_rebuilder_elf_len) {
+    sys_close(fd);
+    return 1;
+  }
+
+  sys_close(fd);
+  sys_chmod(dst, 0777);
+
+  send_notification("DB-Rebuilder v" PAYLOAD_VERSION
+                    " Payload installed to /data/payloads/.");
+
+  payload_exec(db_rebuilder_elf);
+  return 0;
+}
+
+#else /* BUILD_INSTALLER */
+
 int
 _start(void) {
   payload_exec(db_rebuilder_elf);
   return 0;
 }
+
+#endif /* BUILD_INSTALLER */

@@ -27,14 +27,9 @@ SQLITE_SRC := $(SRCDIR)/sqlite3.c
 OBJS := $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SRCS))
 SQLITE_OBJ := $(BUILDDIR)/sqlite3.o
 
-INSTALLER_MAIN_OBJ := $(BUILDDIR)/installer_main.o
-INSTALLER_OBJS := $(OBJS:$(BUILDDIR)/main.o=$(INSTALLER_MAIN_OBJ))
-
-PAYLOAD_BIN := $(BUILDDIR)/payload_normal_elf
-PAYLOAD_OBJ := $(BUILDDIR)/payload_elf.o
-
 PAYLOAD_ELF_C := $(BUILDDIR)/db_rebuilder_elf.c
 BOOTSTRAP_OBJ := $(BUILDDIR)/bootstrap-bin.o
+INSTALLER_BOOTSTRAP_OBJ := $(BUILDDIR)/bootstrap-installer.o
 
 COMMON_CFLAGS := -O2 -std=c11 -DPLATFORM_PS4=1 -I$(SRCDIR) \
                  -ffunction-sections -fdata-sections \
@@ -93,20 +88,14 @@ $(PAYLOAD_ELF_C): $(ELF_NORMAL) | $(BUILDDIR)
 $(BOOTSTRAP_OBJ): $(SRCDIR)/bootstrap-bin.c $(PAYLOAD_ELF_C) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -I$(BUILDDIR) -c -o $@ $<
 
+$(INSTALLER_BOOTSTRAP_OBJ): $(SRCDIR)/bootstrap-bin.c $(PAYLOAD_ELF_C) | $(BUILDDIR)
+	$(CC) $(CFLAGS) -DBUILD_INSTALLER -I$(BUILDDIR) -c -o $@ $<
+
 $(BIN_NORMAL): $(BOOTSTRAP_OBJ) $(SRCDIR)/bin_x86_64.x | $(BUILDDIR)
 	$(LD) -T $(SRCDIR)/bin_x86_64.x -o $(BUILDDIR)/bootstrap-bin.elf $(BOOTSTRAP_OBJ)
 	$(OBJCOPY) -O binary --only-section=.text $(BUILDDIR)/bootstrap-bin.elf $@
 
-$(INSTALLER_MAIN_OBJ): $(SRCDIR)/main.c | $(BUILDDIR)
-	$(CC) $(CFLAGS) -DBUILD_INSTALLER -c -o $@ $<
-
-$(PAYLOAD_BIN): $(ELF_NORMAL) | $(BUILDDIR)
-	cp $< $@
-
-$(PAYLOAD_OBJ): $(PAYLOAD_BIN) | $(BUILDDIR)
-	cd $(BUILDDIR) && $(LD) -r -b binary -m elf_x86_64 -o $(notdir $@) $(notdir $(PAYLOAD_BIN))
-
-$(ELF_INSTALLER): $(INSTALLER_OBJS) $(SQLITE_OBJ) $(PAYLOAD_OBJ)
+$(ELF_INSTALLER): $(INSTALLER_BOOTSTRAP_OBJ) | $(BUILDDIR)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 	$(ELF_STRIP) --strip-all $@
 	$(ELF_STRIP) --remove-section=.eh_frame --remove-section=.eh_frame_hdr $@
