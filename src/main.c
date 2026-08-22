@@ -75,7 +75,7 @@ int main(void)
     log_fini();
 
     char done_msg[256];
-    snprintf(done_msg, sizeof(done_msg), "%s v%s %s\n%s",
+    snprintf(done_msg, sizeof(done_msg), "%s %s %s\n%s",
              APP_NAME, PAYLOAD_VERSION, APP_COPYRIGHT,
              (ret == 0) ? "Database rebuilt successfully." : "Database rebuilt with errors.");
     send_notification(done_msg);

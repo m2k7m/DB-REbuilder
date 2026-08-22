@@ -1,4 +1,4 @@
-VERSION := 0.1
+VERSION := v0.1
 
 ifdef PS4_PAYLOAD_SDK
     include $(PS4_PAYLOAD_SDK)/toolchain/orbis.mk
@@ -9,9 +9,9 @@ endif
 BUILDDIR := build
 SRCDIR   := src
 
-ELF_NORMAL    := db-rebuilder-v$(VERSION).elf
-ELF_INSTALLER := db-rebuilder-v$(VERSION)-installer.elf
-BIN_NORMAL    := db-rebuilder-v$(VERSION).bin
+ELF_NORMAL    := db-rebuilder-$(VERSION).elf
+ELF_INSTALLER := db-rebuilder-$(VERSION)-installer.elf
+BIN_NORMAL    := db-rebuilder-$(VERSION).bin
 
 ELF_STRIP := $(firstword $(wildcard $(PS4_PAYLOAD_SDK)/bin/orbis-llvm-strip) \
 	$(wildcard $(PS4_PAYLOAD_SDK)/bin/orbis-strip))

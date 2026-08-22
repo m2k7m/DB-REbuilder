@@ -40,11 +40,11 @@ echo "[wsl-build] building..."
 export PS4_PAYLOAD_SDK="$SDK"
 make -C "$DST" clean all
 
-cp "$DST"/db-rebuilder-v*.elf "$SRC"/
-cp "$DST"/db-rebuilder-v*.bin "$SRC"/
+cp "$DST"/db-rebuilder-*.elf "$SRC"/
+cp "$DST"/db-rebuilder-*.bin "$SRC"/
 
 echo "[wsl-build] done, artifacts:"
-ls -lh "$SRC"/db-rebuilder-v*
+ls -lh "$SRC"/db-rebuilder-*
 '@
 
 $bashScript = $bashScript.Replace('__REPO__', $srcPath)

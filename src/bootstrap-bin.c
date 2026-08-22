@@ -255,7 +255,7 @@ send_notification(const char *message) {
 
 int
 main(void) {
-  const char *dst = "/data/payloads/db-rebuilder-v" PAYLOAD_VERSION ".elf";
+  const char *dst = "/data/payloads/db-rebuilder-" PAYLOAD_VERSION ".elf";
   int fd;
 
   sys_mkdir("/data/payloads", 0777);
@@ -274,7 +274,7 @@ main(void) {
   sys_close(fd);
   sys_chmod(dst, 0777);
 
-  send_notification("DB-Rebuilder v" PAYLOAD_VERSION
+  send_notification("DB-Rebuilder " PAYLOAD_VERSION
                     " Payload installed to /data/payloads/.");
 
   payload_exec(db_rebuilder_elf);

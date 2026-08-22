@@ -31,7 +31,8 @@ Requires [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) with a Ubu
 powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
 ```
 
-On first run it automatically downloads and builds the [ps4-payload-dev/sdk](https://github.com/ps4-payload-dev/sdk), then compiles the payload (`db-rebuilder-v*.elf` / `.bin`) into this folder. Run `.\build.ps1 -CleanSdk` to force a rebuild of the SDK itself.
+On first run it automatically downloads and builds the [ps4-payload-dev/sdk](https://github.com/ps4-payload-dev/sdk), then compiles the payload (`db-rebuilder-*.elf` / `.bin`) into this folder. Run `.\build.ps1 -CleanSdk` to force a rebuild of the SDK itself.
+
 
 <details>
 <summary>Native Linux</summary>
@@ -47,6 +48,8 @@ make -C sdk DESTDIR=$HOME/ps4-payload-sdk clean install
 Build the payload:
 
 ```console
+git clone https://github.com/m2k7m/DB-REbuilder.git
+cd DB-REbuilder
 export PS4_PAYLOAD_SDK=$HOME/ps4-payload-sdk
 make clean all
 ```
