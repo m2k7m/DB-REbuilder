@@ -23,6 +23,36 @@ Transfer the payload to `/data/payloads/` using FTP, or place it on a USB drive 
 
 Simply [run the payload](https://github.com/m2k7m/DB-REbuilder#how-to-run), then open and close the Internet Browser on your console to refresh the main menu.
 
+## How to Build
+
+Requires [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) with a Ubuntu distro.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
+```
+
+On first run it automatically downloads and builds the [ps4-payload-dev/sdk](https://github.com/ps4-payload-dev/sdk), then compiles the payload (`db-rebuilder-v*.elf` / `.bin`) into this folder. Run `.\build.ps1 -CleanSdk` to force a rebuild of the SDK itself.
+
+<details>
+<summary>Native Linux</summary>
+
+One-time SDK setup:
+
+```console
+sudo apt install -y bash clang lld make git xxd
+git clone https://github.com/ps4-payload-dev/sdk
+make -C sdk DESTDIR=$HOME/ps4-payload-sdk clean install
+```
+
+Build the payload:
+
+```console
+export PS4_PAYLOAD_SDK=$HOME/ps4-payload-sdk
+make clean all
+```
+</details>
+
+
 ## Credits
 
 * A huge thanks to [bucanero](https://github.com/bucanero/) for his awesome [apollo-ps4](https://github.com/bucanero/apollo-ps4/tree/main) project.
