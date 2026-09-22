@@ -25,7 +25,7 @@ jobs:
       - name: Checkout SDK
         uses: actions/checkout@v4
         with:
-          repository: ps4-payload-dev/sdk
+          repository: Al-Azif/sdk
           path: sdk
 
       - name: Setup SDK

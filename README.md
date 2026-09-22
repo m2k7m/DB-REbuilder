@@ -31,7 +31,7 @@ Requires [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) with a Ubu
 powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
 ```
 
-On first run it automatically downloads and builds the [ps4-payload-dev/sdk](https://github.com/ps4-payload-dev/sdk), then compiles the payload (`db-rebuilder-*.elf` / `.bin`) into this folder. Run `.\build.ps1 -CleanSdk` to force a rebuild of the SDK itself.
+On first run it automatically downloads and builds the [Al-Azif/sdk](https://github.com/Al-Azif/sdk), then compiles the payload (`db-rebuilder-*.elf` / `.bin`) into this folder. Run `.\build.ps1 -CleanSdk` to force a rebuild of the SDK itself.
 
 
 <details>
@@ -41,7 +41,7 @@ One-time SDK setup:
 
 ```console
 sudo apt install -y bash clang lld make git xxd
-git clone https://github.com/ps4-payload-dev/sdk
+git clone https://github.com/Al-Azif/sdk
 make -C sdk DESTDIR=$HOME/ps4-payload-sdk clean install
 ```
 
@@ -59,5 +59,5 @@ make clean all
 ## Credits
 
 * A huge thanks to [bucanero](https://github.com/bucanero/) for his awesome [apollo-ps4](https://github.com/bucanero/apollo-ps4/tree/main) project.
-* A huge thanks to [John Törnblom](https://github.com/john-tornblom) and [ps4-payload-dev](https://github.com/ps4-payload-dev/) for [sdk](https://github.com/ps4-payload-dev/sdk) and [elfldr](https://github.com/ps4-payload-dev/elfldr).
+* A huge thanks to [John Törnblom](https://github.com/john-tornblom) and [ps4-payload-dev](https://github.com/ps4-payload-dev/) for [sdk](https://github.com/ps4-payload-dev/sdk) and [elfldr](https://github.com/ps4-payload-dev/elfldr), and to [Al-Azif](https://github.com/Al-Azif) for maintaining the [sdk fork](https://github.com/Al-Azif/sdk) used to build this project.
 * Developed by me and the 4GAMER team.
