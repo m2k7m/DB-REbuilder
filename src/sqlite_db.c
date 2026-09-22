@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <dirent.h>
+#include <errno.h>
 #include <sqlite3.h>
 
 int sqlite3_memvfs_init(const char* vfsName);
@@ -323,6 +324,11 @@ int addcont_dlc_rebuild(const char* db_path)
     dp = opendir("/user/addcont");
     if (!dp)
     {
+        if (errno == ENOENT)
+        {
+            LOG("No /user/addcont directory found, skipping addcont.db rebuild...");
+            return 1;
+        }
         LOG("Failed to open /user/addcont/");
         return 0;
     }
