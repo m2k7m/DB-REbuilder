@@ -1,4 +1,4 @@
-VERSION := v0.1
+VERSION := v0.2
 
 ifdef PS4_PAYLOAD_SDK
     include $(PS4_PAYLOAD_SDK)/toolchain/orbis.mk
