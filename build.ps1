@@ -24,7 +24,7 @@ SDK="$HOME/ps4-payload-sdk"
 if [ ! -f "$SDK/toolchain/orbis.mk" ]; then
     echo "[wsl-build] ps4-payload-sdk not installed, bootstrapping (first run only)"
     if [ ! -d "$SDK_SRC/.git" ]; then
-        git clone --depth 1 https://github.com/Al-Azif/sdk "$SDK_SRC"
+        git clone --depth 1 https://github.com/ps4-payload-dev/sdk "$SDK_SRC"
     fi
     make -C "$SDK_SRC" DESTDIR="$SDK" clean install
 fi
